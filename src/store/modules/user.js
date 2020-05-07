@@ -6,7 +6,7 @@ const getDefaultState = () => {
   return {
     name: '',
     userId: 0,
-    avatar: '',
+    idendity:-1,
     loginState:false
   }
 }
@@ -20,8 +20,8 @@ const mutations = {
   SET_NAME: (state, name) => {
     state.name = name
   },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
+  SET_IDENDITY: (state, idendity) => {
+    state.idendity = idendity
   },
   SET_USERID: (state, id) => {
     state.userId = id
@@ -41,7 +41,7 @@ const actions = {
         console.log(res);
         commit('SET_LOGINSTATE',true);
         commit('SET_USERID',res.data.userId);
-        commit('SET_AVATAR',res.data.userFaceImage);
+        commit('SET_IDENDITY',res.data.userIdendity);
         commit('SET_NAME',res.data.userName);
         resolve();
 

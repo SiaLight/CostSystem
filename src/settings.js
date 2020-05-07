@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '优学课',
+  title: '实验室运行成本管理系统',
 
   /**
    * @type {boolean} true | false

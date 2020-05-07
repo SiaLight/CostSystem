@@ -17,7 +17,7 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/signOut',
+    url: '/user/logout',
     method: 'post'
   })
 }
@@ -56,8 +56,8 @@ export function allUser(data) {
 
 export function login(stuId,password) {
   return request({
-    url: '/webLogin',
+    url: '/user/login',
     method: 'post',
-    params:{stuId:stuId,password:password}
+    params:{username:stuId,password:password}
   })
 }

@@ -9,7 +9,7 @@
       label-position="left"
     >
       <div class="title-container">
-        <h3 class="title">优学课</h3>
+        <h3 class="title">实验室仪器运行成本管理系统</h3>
       </div>
 
       <el-form-item prop="username">
@@ -19,7 +19,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="请输入学号"
+          placeholder="请输入名称"
           name="username"
           type="text"
           tabindex="1"
