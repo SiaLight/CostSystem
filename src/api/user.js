@@ -31,7 +31,7 @@ export function createUser(data) {
 }
 export function updateUser(data) {
   return request({
-    url: '/user/'+data.id,
+    url: '/user/update',
     method: 'put',
     data
   })
@@ -61,3 +61,21 @@ export function login(stuId,password) {
     params:{username:stuId,password:password}
   })
 }
+
+export function removeRole(userId,roleId) {
+  return request({
+    url: '/user/role/remove',
+    method: 'get',
+    params:{userId:userId,roleId:roleId}
+  })
+}
+export function addRole(userId,roleId) {
+  return request({
+    url: '/user/role/add',
+    method: 'get',
+    params:{userId:userId,roleId:roleId}
+  })
+}
+
+
+

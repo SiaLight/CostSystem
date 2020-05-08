@@ -42,7 +42,6 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
@@ -51,7 +50,9 @@ export const constantRoutes = [
       path: 'user',
       name: 'User',
       component: () => import('@/views/user/index'),
-      meta: { title: '用户管理', icon: 'user' }
+      meta: {
+         title: '用户管理', 
+         icon: 'user' }
     }]
   },
   {
@@ -62,7 +63,7 @@ export const constantRoutes = [
       path: 'team',
       name: 'Team',
       component: () => import('@/views/team/index'),
-      meta: { title: '团队管理', icon: 'table' }
+      meta: { title: '团队管理', icon: 'table'}
     }]
   },
   {
@@ -73,7 +74,7 @@ export const constantRoutes = [
       path: 'activity',
       name: 'Activity',
       component: () => import('@/views/activity/index'),
-      meta: { title: '活动管理', icon: 'tree' }
+      meta: { title: '活动管理', icon: 'tree',}
     }]
   },
   {
@@ -84,7 +85,7 @@ export const constantRoutes = [
       path: 'course',
       name: 'Course',
       component: () => import('@/views/course/index'),
-      meta: { title: '课程管理', icon: 'form' }
+      meta: { title: '课程管理', icon: 'form'}
     }]
   },
   {
@@ -95,12 +96,13 @@ export const constantRoutes = [
       path: 'system',
       name: 'System',
       component: () => import('@/views/system/index'),
-      meta: { title: '系统管理', icon: 'nested' }
+      meta: { title: '系统管理', icon: 'nested'}
     }]
   },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true },
 ]
+
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support

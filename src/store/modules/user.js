@@ -6,7 +6,7 @@ const getDefaultState = () => {
   return {
     name: '',
     userId: 0,
-    idendity:-1,
+    roles:[],
     loginState:false
   }
 }
@@ -20,8 +20,8 @@ const mutations = {
   SET_NAME: (state, name) => {
     state.name = name
   },
-  SET_IDENDITY: (state, idendity) => {
-    state.idendity = idendity
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
   },
   SET_USERID: (state, id) => {
     state.userId = id
@@ -41,7 +41,13 @@ const actions = {
         console.log(res);
         commit('SET_LOGINSTATE',true);
         commit('SET_USERID',res.data.userId);
-        commit('SET_IDENDITY',res.data.userIdendity);
+        var mroles=[],resroles=res.data.userRoles;
+        for(let i=0;i<resroles.length;i++){
+          mroles.push(resroles[i].roleName);
+        }
+        console.log(mroles);
+        commit('SET_ROLES',mroles);
+        
         commit('SET_NAME',res.data.userName);
         resolve();
 

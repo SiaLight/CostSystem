@@ -15,110 +15,81 @@
         @click="handleCreate"
       >添加</el-button>
     </div>
-      <el-table
-        :data="perData.filter(data => !search || data.userName.toLowerCase().includes(search.toLowerCase()))"
-        stripe
-        border
-        style="width:100%;margin-top: 20px"
-      >
-        <el-table-column prop="userName" label="名称" width="150"></el-table-column>
-        <el-table-column label="性别" width="150">
-          <template slot-scope="{row}">
-            <el-tag size="medium" v-if="row.gender">女</el-tag>
-            <el-tag size="medium" v-else>男</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="college" label="学院" width="150"></el-table-column>
-        <el-table-column prop="userGrade" label="年级" width="150"></el-table-column>
-        <el-table-column prop="userNumber" label="学号" width="150"></el-table-column>
-        <el-table-column label="联系方式" width="150">
-          <template slot-scope="{row}">
-            <el-tag size="medium">{{row.userEmail}}</el-tag>
-            <el-tag size="medium" style="margin-top: 10px">{{row.userPhone}}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="userResume" label="简历" width="150"></el-table-column>
-        <el-table-column prop="userSpecialty" label="特长" width="150"></el-table-column>
-        <el-table-column label="操作" fixed="right" width="150">
-          <template slot-scope="scope">
-            <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="primary" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-dialog title="个人信息" :visible.sync="dialogFormVisible" width="60%">
-        <el-form :model="info" class="form">
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="名称" :label-width="formLabelWidth">
-                <el-input v-model="info.userName" autocomplete="off"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="性别" :label-width="formLabelWidth">
-                <el-radio v-model="genderNum" label="0">女</el-radio>
-                <el-radio v-model="genderNum" label="1">男</el-radio>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="学院" :label-width="formLabelWidth">
-                <el-input v-model="info.college" autocomplete="off"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="年级" :label-width="formLabelWidth">
-                <el-select v-model="info.userGrade" placeholder="请选择">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="邮箱" :label-width="formLabelWidth">
-                <el-input v-model="info.userEmail" autocomplete="off"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="电话" :label-width="formLabelWidth">
-                <el-input v-model="info.userPhone" autocomplete="off"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="学号" :label-width="formLabelWidth">
-                <el-input v-model="info.userNumber" autocomplete="off"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="特长" :label-width="formLabelWidth">
-                <el-input v-model="info.userSpecialty" autocomplete="off"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-form-item label="简历" :label-width="formLabelWidth">
-            <el-input
-              v-model="info.userResume"
-              autocomplete="off"
-              type="textarea"
-              :rows="3"
-              placeholder="请输入内容"
-            ></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="editAcitvity">确 定</el-button>
-        </div>
-      </el-dialog>
+    <el-table
+      :data="perData.filter(data => !search || data.userName.toLowerCase().includes(search.toLowerCase()))"
+      stripe
+      border
+      style="width:100%;margin-top: 20px"
+    >
+      <el-table-column prop="userName" label="名称" width="150"></el-table-column>
+      <el-table-column prop="userPhone" label="号码" width="150"></el-table-column>
+      <el-table-column label="角色" width="300">
+        <template slot-scope="{row}">
+          <el-tag
+            size="medium"
+            v-for="(item,index) in row.userRoles"
+            :key="index"
+            closable
+            style="margin-top:3px;margin-left:3px"
+            @close="handleColse(item,row)"
+          >{{item.roleName}}</el-tag>
+          <el-button size="mini" @click="handleRoleEdit(row)">+角色</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="150">
+        <template slot-scope="scope">
+          <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button size="mini" type="primary" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-dialog title="添加角色" :visible.sync="visible" width="50%">
+      <el-radio v-model="RoleRadio" label="1">deviceManager</el-radio>
+      <el-radio v-model="RoleRadio" label="2">fundManager</el-radio>
+      <el-radio v-model="RoleRadio" label="3">admin</el-radio>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleRoleCancle">取 消</el-button>
+        <el-button type="primary" @click="handleRoleOK">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="用户" :visible.sync="dialogFormVisible" width="60%">
+      <el-form :model="info" class="form">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="名称" :label-width="formLabelWidth">
+              <el-input v-model="info.userName" autocomplete="off"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="号码" :label-width="formLabelWidth">
+              <el-input v-model="info.userPhone" autocomplete="off"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" v-if="isAdd">
+          <el-col :span="12" >
+            <el-form-item label="角色" :label-width="formLabelWidth">
+              <el-checkbox-group v-model="roleList">
+                <el-checkbox label="设备管理员"></el-checkbox>
+                <el-checkbox label="经费管理员"></el-checkbox>
+                <el-checkbox label="总管理员"></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="密码" :label-width="formLabelWidth">
+              <el-input v-model="info.userPassword" autocomplete="off"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editAcitvity">确 定</el-button>
+      </div>
+    </el-dialog>
     <div v-loading="isLoading" style="margin-top:200px"></div>
     <el-pagination
       background
@@ -134,7 +105,14 @@
 </template>
 
 <script>
-import { allUser, deleteUser, updateUser, createUser } from "@/api/user";
+import {
+  allUser,
+  deleteUser,
+  updateUser,
+  createUser,
+  addRole,
+  removeRole
+} from "@/api/user";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination";
@@ -166,85 +144,61 @@ export default {
       pageSize: 2,
       currentPage: 1,
       search: "",
-      genderNum: "0", //0代表女生，1代表男生
       dialogFormVisible: false,
       formLabelWidth: "100px",
+      roleList: [],
       info: {},
+      visible: false,
+      RoleRadio: "",
+      currentRoloInfo:{},
       default: {
-        college: "",
-        gender: false,
-        userEmail: "",
-        userGrade: "",
         userPhone: "",
         userName: "",
-        userNumber: "",
-        userSpecialty: "",
-        userRusume: ""
       },
-      sendDefault:{
-         college: "",
-        gender: false,
-        email: "",
-        grade: "",
+      sendDefault: {
         phone: "",
         name: "",
-        stuNumber: "",
-        specialty: "",
-        rusume: "",
         id: null,
-        password:'123456'
       },
-      tableData: [{
-         college: "",
-        gender: '',
-        userEmail: "",
-        userGrade: "",
-        userPhone: "",
-        userName: "",
-        userNumber: "",
-        userSpecialty: "",
-        userRusume: ""
-      }],
-      perData: [],
-      options: [{
-          value: '大一',
-          label: '大一'
-        },
+      tableData: [
         {
-          value: '大二',
-          label: '大二'
-        },
-        {
-          value: '大三',
-          label: '大三'
-        },
-        {
-          value: '大四',
-          label: '大四'
-        },
-        {
-          value: '研一',
-          label: '研一'
-        },
-         {
-          value: '研二',
-          label: '研二'
-        },
-         {
-          value: '研三',
-          label: '研三'
-        },
-        
-      ]
-    }
+          userPhone: "",
+          userName: "",
+          userRoles: []
+        }
+      ],
+      perData: []
+    };
   },
   methods: {
+    handleRoleEdit(row){
+       this.visible = true;
+       this.currentRoloInfo = row;
+    },
+    handleRoleCancle(){
+       this.visible = false;
+       this.currentRoloInfo = {};
+       this.RoleRadio="";
+    },
+    handleRoleOK(){
+      var currentRole = this.currentRoloInfo.userRoles;
+      for(let i=0;i<currentRole.length;i++){
+        if(currentRole[i].roleId==this.RoleRadio){
+          this.$message('已拥有该角色');
+          return;
+        }
+      }
+
+      addRole(this.currentRoloInfo.userId,parseInt(this.RoleRadio)).then(res=>{
+        console.log(res.data);
+        this.message(res.code);
+      })
+      this.visible = false;
+         
+    },
     handleEdit(index, row) {
       this.dialogFormVisible = true;
       this.info = row;
-      console.log(this.info);
-      if (this.info.gender) this.genderNum = "1";
-      else this.genderNum = "0";
     },
     handleCreate() {
       this.dialogFormVisible = true;
@@ -254,6 +208,13 @@ export default {
     handleCurrentChange() {
       this.getCurrentData();
     },
+    handleColse(item, row) {
+      var that = this;
+      removeRole(row.userId, item.roleId).then(res => {
+        console.log(res);
+        that.message(res.code);
+      });
+    },
     getCurrentData() {
       var x = this.currentPage * this.pageSize;
       var x0 = (this.currentPage - 1) * this.pageSize;
@@ -262,8 +223,6 @@ export default {
     },
     editAcitvity() {
       var that = this;
-      if (this.genderNum == "0") this.info.gender = false;
-      else this.info.gender = true;
       this.convert();
       if (!this.isAdd) {
         updateUser(this.sendDefault).then(res => {
@@ -297,18 +256,37 @@ export default {
         this.$message.error("操作失败！");
       }
     },
-    convert(){
+    convert() {
       this.sendDefault.name = this.info.userName;
-      this.sendDefault.gender = this.info.gender;
-      this.sendDefault.stuNumber = this.info.userNumber;
-      this.sendDefault.grade = this.info.userGrade;
       this.sendDefault.phone = this.info.userPhone;
-      this.sendDefault.email = this.info.userEmail;
-      this.sendDefault.specialty = this.info.userSpecialty;
-       this.sendDefault.college = this.info.college;
-       this.sendDefault.rusume = this.info.userRusume;
-       this.sendDefault.id = this.info.userId;
-      
+      this.sendDefault.id = this.info.userId;
+      if(this.isAdd){
+        let roleIdList = [];
+        let role1={
+          id:1,
+          name:"deviceManager",
+          status:1
+        },
+        role2={
+          id:2,
+          name:"fundManager",
+          status:1
+        },
+        role3={
+          id:3,
+          name:"admin",
+          status:1
+        }
+      for (let i = 0; i < this.roleList.length; i++) {
+        if (this.roleList[i] == "设备管理员") roleIdList.push(role1);
+        else if (this.roleList[i] == "经费管理员") roleIdList.push(role2);
+        else roleIdList.push(role3);
+      }
+
+      this.sendDefault.roles = roleIdList;
+      this.sendDefault.password = this.info.userPassword;
+
+      }
     }
   },
   mounted() {
