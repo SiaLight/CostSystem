@@ -67,26 +67,55 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/activity',
+    path: '/checkAccount',
     component: Layout,
-    redirect: '/activity',
+    redirect: 'noRedirect',
+    meta:{title: '审核账单', icon: 'tree',},
     children: [{
-      path: 'activity',
-      name: 'Activity',
-      component: () => import('@/views/activity/index'),
-      meta: { title: '活动管理', icon: 'tree',}
-    }]
+      path: 'noCheck',
+      name: 'NoCheck',
+      component: () => import('@/views/checkAccount/index'),
+      meta: { title: '待审核', icon: 'tree',}
+    },
+    {
+      path: 'hasCheck',
+      name: 'HasCheck',
+      component: () => import('@/views/checkAccount/passAccount'),
+      meta: { title: '审核通过', icon: 'tree',}
+    },
+    {
+      path: 'hasNoCheck',
+      name: 'HasNoCheck',
+      component: () => import('@/views/checkAccount/noPassAccount'),
+      meta: { title: '审核未通过', icon: 'tree',}
+    },
+  ]
   },
   {
     path: '/course',
     component: Layout,
     redirect: '/course',
+    redirect: 'noRedirect',
+    meta:{title: '我的账单', icon: 'form',},
     children: [{
       path: 'course',
       name: 'Course',
-      component: () => import('@/views/course/index'),
-      meta: { title: '课程管理', icon: 'form'}
-    }]
+      component: () => import('@/views/myAccount/index'),
+      meta: { title: '待审核', icon: 'form'}
+    },
+    {
+      path: 'noPass',
+      name: 'NoPass',
+      component: () => import('@/views/myAccount/checkFail'),
+      meta: { title: '审核失败', icon: 'form'}
+    },
+    {
+      path: 'pass',
+      name: 'Pass',
+      component: () => import('@/views/myAccount/checkSuccess'),
+      meta: { title: '审核成功', icon: 'form'}
+    },
+  ]
   },
   {
     path: '/system',
@@ -96,7 +125,7 @@ export const constantRoutes = [
       path: 'system',
       name: 'System',
       component: () => import('@/views/system/index'),
-      meta: { title: '系统管理', icon: 'nested'}
+      meta: { title: '个人中心', icon: 'nested'}
     }]
   },
   // 404 page must be placed at the end !!!

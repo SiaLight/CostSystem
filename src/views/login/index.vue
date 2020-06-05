@@ -132,14 +132,9 @@ export default {
             console.log(this.$store.state.user.loginState);
             this.loading = false
           }).catch(() => {
+            this.$message.error("登录失败");
             this.loading = false
           })
-          // login("101","123456").then(res => {
-          //   console.log("success");
-          //   this.$router.push({ path: '/' })
-          //   console.log("success");
-          //   this.loading = false
-          // });
         } else {
           console.log("error submit!!");
           return false;

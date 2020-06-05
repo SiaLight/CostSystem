@@ -1,106 +1,119 @@
 <template>
   <div class="app-container box">
-    <div class="filter-container">
-      <el-input
-        placeholder="请输入内容"
-        prefix-icon="el-icon-search"
-        v-model="search"
-        style="width: 200px"
-      ></el-input>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >添加</el-button>
-    </div>
-    <el-table
-      :data="perData.filter(data => !search || data.userName.toLowerCase().includes(search.toLowerCase()))"
-      stripe
-      border
-      style="width:100%;margin-top: 20px"
-    >
-      <el-table-column prop="userName" label="名称" width="150"></el-table-column>
-      <el-table-column prop="userPhone" label="号码" width="150"></el-table-column>
-      <el-table-column label="角色" width="300">
-        <template slot-scope="{row}">
-          <el-tag
-            size="medium"
-            v-for="(item,index) in row.userRoles"
-            :key="index"
-            closable
-            style="margin-top:3px;margin-left:3px"
-            @close="handleColse(item,row)"
-          >{{item.roleName}}</el-tag>
-          <el-button size="mini" @click="handleRoleEdit(row)">+角色</el-button>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="150">
-        <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button size="mini" type="primary" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <el-dialog title="添加角色" :visible.sync="visible" width="50%">
-      <el-radio v-model="RoleRadio" label="1">deviceManager</el-radio>
-      <el-radio v-model="RoleRadio" label="2">fundManager</el-radio>
-      <el-radio v-model="RoleRadio" label="3">admin</el-radio>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="handleRoleCancle">取 消</el-button>
-        <el-button type="primary" @click="handleRoleOK">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <el-dialog title="用户" :visible.sync="dialogFormVisible" width="60%">
-      <el-form :model="info" class="form">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="名称" :label-width="formLabelWidth">
-              <el-input v-model="info.userName" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="号码" :label-width="formLabelWidth">
-              <el-input v-model="info.userPhone" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" v-if="isAdd">
-          <el-col :span="12" >
-            <el-form-item label="角色" :label-width="formLabelWidth">
-              <el-checkbox-group v-model="roleList">
-                <el-checkbox label="设备管理员"></el-checkbox>
-                <el-checkbox label="经费管理员"></el-checkbox>
-                <el-checkbox label="总管理员"></el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="密码" :label-width="formLabelWidth">
-              <el-input v-model="info.userPassword" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editAcitvity">确 定</el-button>
+    <div v-if="checkPermission(['admin'])">
+      <div class="filter-container">
+        <el-input
+          placeholder="请输入名称"
+          prefix-icon="el-icon-search"
+          v-model="search"
+          style="width: 200px"
+        ></el-input>
+        <el-button
+          class="filter-item"
+          style="margin-left: 10px;"
+          type="primary"
+          icon="el-icon-edit"
+          @click="handleCreate"
+        >添加</el-button>
       </div>
-    </el-dialog>
-    <div v-loading="isLoading" style="margin-top:200px"></div>
-    <el-pagination
-      background
-      class="page"
-      layout="prev, pager, next"
-      :current-page.sync="currentPage"
-      @current-change="handleCurrentChange"
-      :page-size="pageSize"
-      :pager-count="5"
-      :total="totalNum"
-    ></el-pagination>
+      <el-table
+        :data="perData.filter(data => !search || data.userName.toLowerCase().includes(search.toLowerCase()))"
+        stripe
+        border
+        style="margin-top: 20px"
+      >
+        <el-table-column prop="userName" label="名称"></el-table-column>
+        <el-table-column prop="userPhone" label="号码"></el-table-column>
+        <el-table-column label="角色">
+          <template slot-scope="{row}">
+            <el-tag
+              size="medium"
+              v-for="(item,index) in row.userRoles"
+              :key="index"
+              closable
+              style="margin-top:3px;margin-left:3px"
+              @close="handleColse(item,row)"
+            >{{item.roleName}}</el-tag>
+            <el-button size="mini" @click="handleRoleEdit(row)" style="margin-top:3px;">+角色</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="账户锁定">
+          <template slot-scope="{row}">
+            <el-tag v-if="row.state">未锁定</el-tag>
+            <el-tag v-else>已锁定</el-tag>
+            
+          </template>
+        </el-table-column>
+
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button size="mini" type="primary" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button size="mini" type="danger" style="margin-top:3px;margin-left:0px"  @click="handleLock(scope.$index, scope.row)">锁定用户/解除锁定</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-dialog title="添加角色" :visible.sync="visible" width="50%">
+        <el-radio v-model="RoleRadio" label="1">deviceManager</el-radio>
+        <el-radio v-model="RoleRadio" label="2">fundManager</el-radio>
+        <el-radio v-model="RoleRadio" label="3">admin</el-radio>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="handleRoleCancle">取 消</el-button>
+          <el-button type="primary" @click="handleRoleOK">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <el-dialog title="用户" :visible.sync="dialogFormVisible" width="60%">
+        <el-form :model="info" class="form">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="名称" :label-width="formLabelWidth">
+                <el-input v-model="info.userName" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="号码" :label-width="formLabelWidth">
+                <el-input v-model="info.userPhone" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20" v-if="isAdd">
+            <el-col :span="12">
+              <el-form-item label="角色" :label-width="formLabelWidth">
+                <el-checkbox-group v-model="roleList">
+                  <el-checkbox label="设备管理员"></el-checkbox>
+                  <el-checkbox label="经费管理员"></el-checkbox>
+                  <el-checkbox label="总管理员"></el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="密码" :label-width="formLabelWidth">
+                <el-input v-model="info.userPassword" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editAcitvity">确 定</el-button>
+        </div>
+      </el-dialog>
+      <div v-loading="isLoading" style="margin-top:200px"></div>
+      <el-pagination
+        background
+        class="page"
+        layout="prev, pager, next"
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        :page-size="pageSize"
+        :pager-count="5"
+        :total="totalNum"
+      ></el-pagination>
+    </div>
+    <div v-else>
+      <h3>您没有权限访问！</h3>
+    </div>
   </div>
 </template>
 
@@ -111,11 +124,13 @@ import {
   updateUser,
   createUser,
   addRole,
-  removeRole
+  removeRole,
+  updateLock
 } from "@/api/user";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination";
+import checkPermission from "@/utils/permission";
 
 export default {
   name: "ComplexTable",
@@ -141,7 +156,7 @@ export default {
       isAdd: false,
       isLoading: true,
       totalNum: 0,
-      pageSize: 2,
+      pageSize: 5,
       currentPage: 1,
       search: "",
       dialogFormVisible: false,
@@ -150,10 +165,10 @@ export default {
       info: {},
       visible: false,
       RoleRadio: "",
-      currentRoloInfo:{},
+      currentRoloInfo: {},
       default: {
         userPhone: "",
-        userName: "",
+        userName: ""
       },
       sendDefault: {
         phone: "",
@@ -171,34 +186,43 @@ export default {
     };
   },
   methods: {
-    handleRoleEdit(row){
-       this.visible = true;
-       this.currentRoloInfo = row;
+    handleRoleEdit(row) {
+      this.visible = true;
+      this.currentRoloInfo = row;
     },
-    handleRoleCancle(){
-       this.visible = false;
-       this.currentRoloInfo = {};
-       this.RoleRadio="";
+    checkPermission,
+    handleRoleCancle() {
+      this.visible = false;
+      this.currentRoloInfo = {};
+      this.RoleRadio = "";
     },
-    handleRoleOK(){
+    handleRoleOK() {
       var currentRole = this.currentRoloInfo.userRoles;
-      for(let i=0;i<currentRole.length;i++){
-        if(currentRole[i].roleId==this.RoleRadio){
-          this.$message('已拥有该角色');
+      for (let i = 0; i < currentRole.length; i++) {
+        if (currentRole[i].roleId == this.RoleRadio) {
+          this.$message("已拥有该角色");
           return;
         }
       }
 
-      addRole(this.currentRoloInfo.userId,parseInt(this.RoleRadio)).then(res=>{
-        console.log(res.data);
-        this.message(res.code);
-      })
+      addRole(this.currentRoloInfo.userId, parseInt(this.RoleRadio)).then(
+        res => {
+          console.log(res.data);
+          this.message(res.code);
+        }
+      );
       this.visible = false;
-         
     },
     handleEdit(index, row) {
       this.dialogFormVisible = true;
       this.info = row;
+    },
+    handleLock(index,row){
+      var that = this;
+      updateLock(row.userId).then(res=>{
+        that.message(res.code);
+      })
+
     },
     handleCreate() {
       this.dialogFormVisible = true;
@@ -231,11 +255,17 @@ export default {
           that.dialogFormVisible = false;
         });
       } else {
-        createUser(this.sendDefault).then(res => {
-          console.log(res);
-          that.message(res.code);
-          that.dialogFormVisible = false;
-        });
+        if (this.sendDefault.phone.trim().length!= 11)
+          this.$message.error("号码格式不对");
+        else if (this.sendDefault.password.trim().length < 11)
+          this.$message.error("密码位数应不小于6");
+        else {
+          createUser(this.sendDefault).then(res => {
+            console.log(res);
+            that.message(res.code);
+            that.dialogFormVisible = false;
+          });
+        }
       }
     },
     handleDelete(index, row) {
@@ -243,7 +273,15 @@ export default {
       var id = parseInt(row.userId);
       deleteUser({ id: row.userId }).then(res => {
         console.log(res);
-        that.message(res.code);
+        if(res.code != 200){
+           that.$message.error("该用户有关联的账单信息，不能删除，可锁定账户。");
+        }
+        else{
+          that.$message({
+          message: "操作成功！",
+          type: "success"
+        });
+        }
       });
     },
     message(code) {
@@ -260,32 +298,31 @@ export default {
       this.sendDefault.name = this.info.userName;
       this.sendDefault.phone = this.info.userPhone;
       this.sendDefault.id = this.info.userId;
-      if(this.isAdd){
+      if (this.isAdd) {
         let roleIdList = [];
-        let role1={
-          id:1,
-          name:"deviceManager",
-          status:1
-        },
-        role2={
-          id:2,
-          name:"fundManager",
-          status:1
-        },
-        role3={
-          id:3,
-          name:"admin",
-          status:1
+        let role1 = {
+            id: 1,
+            name: "deviceManager",
+            status: 1
+          },
+          role2 = {
+            id: 2,
+            name: "fundManager",
+            status: 1
+          },
+          role3 = {
+            id: 3,
+            name: "admin",
+            status: 1
+          };
+        for (let i = 0; i < this.roleList.length; i++) {
+          if (this.roleList[i] == "设备管理员") roleIdList.push(role1);
+          else if (this.roleList[i] == "经费管理员") roleIdList.push(role2);
+          else roleIdList.push(role3);
         }
-      for (let i = 0; i < this.roleList.length; i++) {
-        if (this.roleList[i] == "设备管理员") roleIdList.push(role1);
-        else if (this.roleList[i] == "经费管理员") roleIdList.push(role2);
-        else roleIdList.push(role3);
-      }
 
-      this.sendDefault.roles = roleIdList;
-      this.sendDefault.password = this.info.userPassword;
-
+        this.sendDefault.roles = roleIdList;
+        this.sendDefault.password = this.info.userPassword;
       }
     }
   },

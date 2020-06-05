@@ -34,18 +34,20 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
+    var that = this
     console.log(userInfo);
     return new Promise((resolve, reject) => {
       console.log("logining");
       login(userInfo.username,userInfo.password).then(res => {
         console.log(res);
+        if(res.code!=200)
+        that.$message.error(res.msg);
         commit('SET_LOGINSTATE',true);
         commit('SET_USERID',res.data.userId);
         var mroles=[],resroles=res.data.userRoles;
         for(let i=0;i<resroles.length;i++){
           mroles.push(resroles[i].roleName);
         }
-        console.log(mroles);
         commit('SET_ROLES',mroles);
         
         commit('SET_NAME',res.data.userName);

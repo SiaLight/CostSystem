@@ -63,5 +63,44 @@ export function addRole(userId,roleId) {
   })
 }
 
+export function userInfo(userId){
+  return request({
+    url: '/user/'+userId,
+    method: 'get',
+  })
+}
+
+export function updateName(userId,name) {
+  return request({
+    url: '/user/name',
+    method: 'post',
+    params:{userId:userId,name:name}
+  })
+}
+
+export function updatePhone(userId,phone) {
+  return request({
+    url: '/user/phone',
+    method: 'post',
+    params:{userId:userId,phone:phone}
+  })
+}
+
+export function updatePassword(userId,password) {
+  return request({
+    url: '/user/password',
+    method: 'post',
+    params:{userId:userId,password:password}
+  })
+}
+
+export function updateLock(userId) {
+  return request({
+    url: '/user/lock',
+    method: 'post',
+    params:{userId:userId}
+  })
+}
+
 
 

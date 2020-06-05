@@ -18,16 +18,14 @@
     <!-- <div v-if="!isLoading"> -->
     <el-table
       :data="perData.filter(data => !search || data.deviceName.toLowerCase().includes(search.toLowerCase()))"
-      stripe
       border
-      style="width:100%;margin-top: 20px"
+      style="margin-top: 20px"
     >
-      <el-table-column prop="deviceName" label="名称" width="150"></el-table-column>
-      <el-table-column prop="deviceExpense" label="总支出" width="150"></el-table-column>
-      <el-table-column label="操作" width="280">
+      <el-table-column prop="deviceName" label="名称" ></el-table-column>
+      <el-table-column v-if="checkPermission(['admin'])" prop="deviceExpense" label="总支出" ></el-table-column>
+      <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button size="mini" type="primary" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           <el-button
             size="mini"
             type="success"
@@ -52,9 +50,10 @@
         </el-table-column>
       </el-table>
       <div style="margin-top:5px">
-          <el-button type="primary" size="small" @click="totalPrice">显示总价</el-button> <span>{{account.price}}</span>
+        <el-button type="primary" size="small" @click="totalPrice">显示总价</el-button>
+        <span>{{account.price}}</span>
       </div>
-      <el-input style="margin-top:5px" type="textarea" :rows="2" placeholder="请输入详情" v-model="account.des"></el-input>
+      <el-input type="textarea" :rows="2" placeholder="请输入摘要" v-model="account.summary" style="margin-top:5px"></el-input>
       <div slot="footer" class="dialog-footer">
         <el-button @click="accountVisible = false">取 消</el-button>
         <el-button type="primary" @click="editAddAcount">确 定</el-button>
@@ -98,28 +97,16 @@ import {
   updateDeviceName
 } from "@/api/device";
 
-import {addAccount} from "@/api/account";
+import { addAccount } from "@/api/account";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination";
+import checkPermission from '@/utils/permission' // 权限判断函数
 
 export default {
   name: "ComplexTable",
   components: { Pagination },
   directives: { waves },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: "success",
-        draft: "info",
-        deleted: "danger"
-      };
-      return statusMap[status];
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type];
-    }
-  },
   data() {
     return {
       typeValue: "",
@@ -127,7 +114,7 @@ export default {
       isLoading: true,
       isAdd: false,
       totalNum: 0,
-      pageSize: 2,
+      pageSize: 5,
       currentPage: 1,
       search: "",
       dialogFormVisible: false,
@@ -150,82 +137,107 @@ export default {
       currentDevice: {},
       accountVisible: false,
       item: [
-          {
-            id: null,
-            name: "报刊资料费",
-            price: "0",
-            des: ""
-          },
-          {
-            id: null,
-            name: "图书资料费",
-            price: "0",
-            des: ""
-          },
-          {
-            id: null,
-            name: "清洁劳动用品",
-            price: "0",
-            des: ""
-          },
-          {
-            id: null,
-            name: "培训资料印刷制作费",
-            price: "0",
-            des: ""
-          },
-          {
-            id: null,
-            name: "市内交通费",
-            price: "0",
-            des: ""
-          },
-          {
-            id: null,
-            name: "实验材料购置",
-            price: "0",
-            des: ""
-          },
-          {
-            id: null,
-            name: "软件购置",
-            price: "0",
-            des: ""
-          },
-          {
-            id: null,
-            name: "设备维修",
-            price: "0",
-            des: ""
-          }
-        ],
+        {
+          id: null,
+          name: "报刊资料费",
+          price: "0",
+          des: ""
+        },
+        {
+          id: null,
+          name: "图书资料费",
+          price: "0",
+          des: ""
+        },
+        {
+          id: null,
+          name: "清洁劳动用品",
+          price: "0",
+          des: ""
+        },
+        {
+          id: null,
+          name: "培训资料印刷制作费",
+          price: "0",
+          des: ""
+        },
+        {
+          id: null,
+          name: "市内交通费",
+          price: "0",
+          des: ""
+        },
+        {
+          id: null,
+          name: "实验材料购置",
+          price: "0",
+          des: ""
+        },
+        {
+          id: null,
+          name: "软件购置",
+          price: "0",
+          des: ""
+        },
+        {
+          id: null,
+          name: "设备维修",
+          price: "0",
+          des: ""
+        }
+      ],
       account: {
         des: "",
+        summary:"",
         price: 0,
-        
+        device: {
+          id: null,
+          expense: 0,
+          name: ""
+        },
+        items: []
       }
     };
   },
   methods: {
-      totalPrice(){
-        var total=0.0;
-        for(let i=0;i<this.item.length;i++){
-            total+=parseFloat(this.item[i].price);
-        }
-        this.account.price = total;
-      },
+    checkPermission,
+    totalPrice() {
+      var total = 0.0;
+      for (let i = 0; i < this.item.length; i++) {
+        total += parseFloat(this.item[i].price);
+      }
+      this.account.price = total;
+    },
     handleAddAccount(index, row) {
-      this.currentDevice = row;
+      if(checkPermission(['deviceManager']))
+      {
+        this.currentDevice = row;
       this.accountVisible = true;
+      }
+      else{
+         this.$message.error("您没有仪器管理员权限！");
+      }
     },
     handleEdit(index, row) {
-      this.dialogFormVisible = true;
+      if(checkPermission(['admin']))
+      {
+        this.dialogFormVisible = true;
       this.info = row;
+      }
+      else
+      this.$message.error("您没有管理员权限！");
     },
     handleCreate() {
-      this.dialogFormVisible = true;
+      if(checkPermission(['admin']))
+      {
+        this.dialogFormVisible = true;
       this.isAdd = true;
       this.info = this.default;
+      }
+      else{
+        this.$message.error("您没有管理员权限！");
+      }
+      
     },
     handleCurrentChange() {
       this.getCurrentData();
@@ -261,14 +273,18 @@ export default {
         that.message(res.code);
       });
     },
-    editAddAcount(){
-        var that = this;
+    editAddAcount() {
+      var that = this;
+      this.account.items = this.item;
+      this.account.device.id = this.currentDevice.deviceId;
+      this.account.device.expense = this.currentDevice.deviceExpense;
+      this.account.device.name = this.currentDevice.deviceName;
 
-        addAccount(this.currentDevice.deviceId,this.account.price,this.account.des,this.item).then(res =>{
-            console.log(res);
+      addAccount(this.account).then(res => {
+        console.log(res);
         that.message(res.code);
-        })
-
+      });
+      this.accountVisible = false;
     },
     message(code) {
       if (code == 200)

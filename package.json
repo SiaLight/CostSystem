@@ -8,6 +8,8 @@
     "dev": "vue-cli-service serve",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
+    "start": "node index.js",
+    "server": "nodemon index.js --ignore client",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src",
     "test:unit": "jest --clearCache && vue-cli-service test:unit",
@@ -21,6 +23,7 @@
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "path-to-regexp": "2.4.0",
+    "qs": "^6.9.4",
     "vue": "2.6.10",
     "vue-router": "3.0.6",
     "vuex": "3.1.0"

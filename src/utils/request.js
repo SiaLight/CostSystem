@@ -3,7 +3,12 @@ import axios from 'axios'
 const service = axios.create({
   baseURL: '/api', // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 50000 // request timeout
+  timeout: 50000,
+//   headers:{'Content-Type':'application/json'},
+//   transformRequest: [function(data) {
+//     data = QS.stringify(data)
+//     return data
+// }] // request timeout
 })
 
 
